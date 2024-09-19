@@ -7,6 +7,10 @@ const Subject = require('../models/subjectSchema.js');
 const Notice = require('../models/noticeSchema.js');
 const Complain = require('../models/complainSchema.js');
 
+//edited
+const Otp = require('../models/otp.js');
+
+
 // const adminRegister = async (req, res) => {
 //     try {
 //         const salt = await bcrypt.genSalt(10);
@@ -113,6 +117,12 @@ const getAdminDetail = async (req, res) => {
     }
 }
 
+
+
+
+
+
+
 // const deleteAdmin = async (req, res) => {
 //     try {
 //         const result = await Admin.findByIdAndDelete(req.params.id)
@@ -149,4 +159,81 @@ const getAdminDetail = async (req, res) => {
 
 // module.exports = { adminRegister, adminLogIn, getAdminDetail, deleteAdmin, updateAdmin };
 
-module.exports = { adminRegister, adminLogIn, getAdminDetail };
+
+
+//edit
+const emailSend = async (req, res) => {
+    console.log("data check", req);
+    let data = await Admin.findOne({ email: req.body.email });
+    const responseType = {};
+    if (data) {
+        let otpcode = Math.floor((Math.random() * 10000) + 1);
+        let otpData = new Otp({
+            email: req.body.email,
+            code: otpcode,
+            expireIn: new Date().getTime() + 180 * 1000
+        });
+        let otpResponse = await otpData.save();
+        responseType.statusText = 'Success';
+        responseType.message = 'Please Check Your Email Id';
+    } else {
+        responseType.statusText = 'error';
+        responseType.message = 'Email Id not Exist';
+    }
+    res.status(200).json(responseType);
+}
+const changePassword = async (req,res)=>{
+   let data = await Otp.find({email:req.body.email,code:req.body.otpcode});
+   const response = {}
+   if(data){
+    let currentTime = new Date().getTime();
+    let diff = data.expireIn - currentTime;
+    if(diff <0){
+        response.message = 'Token Expire'
+        response.statusText = 'error'
+    }else{
+        let user = await Users.findOne({email:req.body.email})
+        user.password = req.body.password;
+        user.save();
+        response.message = 'Password Changed Successfully'
+        response.statusText = 'success';
+    }
+   }else{
+    response.message = 'Invalid OTP'
+    response.statusText = 'error'
+   }
+   res.status(200).json(responseType);
+}
+
+// emailer
+
+const mailer = (email,Otp)=>{
+    var nodemailer = require('nodemailer');
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port:5000,
+        secure:false,
+        auth:{
+            user:'sliku1998@gmail.com',
+            pass:'Likuswain@1998'
+        }
+    });
+
+    var mailOptions = {
+        from:'sliku1998@gmail.com',
+        to:'likuswain143l.s@gmail.com',
+        subject:'Sending Email using Node.js',
+        text:'Thank you sir !'
+    };
+  transporter.sendMail(mailOptions,function(error,info){
+    if(error){
+        console.log(error);
+    }else{
+        console.log('Email sent: ' + info.response);
+    }
+  });
+
+}
+
+
+module.exports = { adminRegister, adminLogIn, getAdminDetail,emailSend,changePassword };

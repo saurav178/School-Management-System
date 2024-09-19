@@ -139,4 +139,4 @@ const AddStudent = ({ situation }) => {
     )
 }
 
-export default AddStudent
+export default AddStudent;
