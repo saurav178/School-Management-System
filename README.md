@@ -71,3 +71,5 @@ The Backend API will be running at `localhost:5000`.
 * Render - server side
 * Netlify - client side
 
+* this project is made by react, javascript, node.js, tailwindcss and some of library
+
