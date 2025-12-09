@@ -2,6 +2,8 @@
     SCHOOL MANAGEMENT SYSTEM
 </h1>
 
+<p> hey this ia one of my best practice project</p>
+
 <h3 align="center">
 Streamline school management, class organization, and add students and faculty.<br>
 Seamlessly track attendance, assess performance, and provide feedback. <br>
